@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANIMALIA - インタラクティブ動物科学</title>
+    <!-- Tailwind CSS for modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & Orbitron for sleek futuristic typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #0b0f19;
+        }
+        .font-cyber {
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+        }
+        /* Glow effect for interactive highlights */
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .neon-text {
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden antialiased">
+
+    <!-- HEADER -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l92-7-9-7-9 7v7zm0 0l-9-7 9-7 9 7v7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black font-cyber tracking-wider bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">ANIMALIA</h1>
+                    <p class="text-xs text-slate-400 tracking-widest uppercase font-semibold">Interactive Bio-Science</p>
+                </div>
+            </div>
+
+            <!-- Global Title/Achievement Display -->
+            <div class="hidden md:flex items-center space-x-4 bg-slate-900/60 px-4 py-2 rounded-2xl border border-slate-800/80">
+                <div class="text-right">
+                    <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">CURRENT RANK</div>
+                    <div id="header-rank" class="text-sm font-bold text-emerald-400 font-cyber neon-text">アマチュア観察員</div>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-800"></div>
+                <div>
+                    <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">SCORE</div>
+                    <div id="header-score" class="text-sm font-extrabold text-slate-200"><span class="text-emerald-400 font-cyber">0</span> / 10</div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex space-x-2">
+                <button onclick="switchTab('explore')" id="nav-explore" class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center space-x-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 text-slate-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    <span>構造解析</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center space-x-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 text-slate-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>生態クイズ</span>
+                </button>
+                <button onclick="switchTab('rank')" id="nav-rank" class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center space-x-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 text-slate-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                    <span>称号実績</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
+
+        <!-- TAB 1: HOME -->
+        <section id="tab-home" class="tab-content transition-all duration-500 opacity-100 transform translate-y-0">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-6">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-bold text-emerald-400 tracking-wider uppercase">
+                        <span>✨ NEXT GENERATION BIOLOGY PORTAL</span>
+                    </div>
+                    <h2 class="text-4xl sm:text-6xl font-black tracking-tight leading-none text-white">
+                        誰も知らない<br>
+                        <span class="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">生命の設計図</span>を、<br>
+                        ハックせよ。
+                    </h2>
+                    <p class="text-slate-400 text-lg leading-relaxed max-w-xl">
+                        生物の体は、数億年をかけた進化の「超最高傑作」です。チーターの爆速の骨格、クジラの規格外のスケール、そして鳥類の美しき空気力学。驚愕の構造と面白い習性を、スタイリッシュな図鑑とクイズで体感しよう。
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchTab('explore')" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black tracking-wider shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all duration-300">
+                            構造解析をスタートする
+                        </button>
+                        <button onclick="switchTab('quiz')" class="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white font-bold transition-all duration-300">
+                            生態クイズに挑戦
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative">
+                    <!-- Techy circular layout representing biology analysis -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 rounded-full filter blur-3xl opacity-30"></div>
+                    <div class="relative bg-slate-900/40 border border-slate-800 p-8 rounded-3xl backdrop-blur-sm neon-glow">
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase">BIO_TELEMETRY.SYS</span>
+                            <div class="flex space-x-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500/30 transition-colors duration-300">
+                                <div class="text-xs text-slate-500 font-bold tracking-widest uppercase mb-1">現在のあなたの称号</div>
+                                <div class="text-2xl font-black text-white font-cyber flex items-center justify-between">
+                                    <span id="home-rank" class="text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text">アマチュア観察員</span>
+                                    <span class="text-xs px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase font-mono font-bold tracking-wide">ACTIVE</span>
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800/80">
+                                <div class="flex justify-between text-xs font-bold tracking-widest uppercase text-slate-500 mb-2">
+                                    <span>QUIZ COMPLETION PROGRESS</span>
+                                    <span id="home-progress-text" class="text-emerald-400 font-cyber">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
+                                    <div id="home-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full w-0 transition-all duration-1000"></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800/80">
+                                    <div class="text-2xl font-black font-cyber text-slate-200" id="stat-solved">0</div>
+                                    <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">正解問題数</div>
+                                </div>
+                                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800/80">
+                                    <div class="text-2xl font-black font-cyber text-amber-400" id="stat-unlocked">1 / 4</div>
+                                    <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">解放した称号</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: EXPLORE (STRUCTURE ANALYSIS) -->
+        <section id="tab-explore" class="tab-content transition-all duration-500 hidden opacity-0 transform translate-y-4">
+            <div class="mb-8">
+                <span class="text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase">ANATOMICAL DIAGRAM ANALYSIS</span>
+                <h3 class="text-2xl sm:text-3xl font-black text-white mt-1">生体構造インタラクティブ解析</h3>
+                <p class="text-slate-400 text-sm mt-1">動物の体に潜む驚異の設計美。部位のノードをクリックしてテクノロジーを暴こう。</p>
+            </div>
+
+            <!-- Animal Selector Bar -->
+            <div class="flex space-x-2 mb-8 border-b border-slate-800 pb-4 overflow-x-auto">
+                <button onclick="selectAnimal('cheetah')" id="btn-animal-cheetah" class="px-5 py-3 rounded-2xl text-sm font-bold tracking-wide transition-all duration-300 flex items-center space-x-2.5 bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/10">
+                    <span class="text-lg">🐆</span>
+                    <span>チーター</span>
+                </button>
+                <button onclick="selectAnimal('whale')" id="btn-animal-whale" class="px-5 py-3 rounded-2xl text-sm font-bold tracking-wide transition-all duration-300 flex items-center space-x-2.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-400 hover:text-white">
+                    <span class="text-lg">🐋</span>
+                    <span>シロナガスクジラ</span>
+                </button>
+                <button onclick="selectAnimal('falcon')" id="btn-animal-falcon" class="px-5 py-3 rounded-2xl text-sm font-bold tracking-wide transition-all duration-300 flex items-center space-x-2.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-400 hover:text-white">
+                    <span class="text-lg">🦅</span>
+                    <span>ハヤブサ</span>
+                </button>
+            </div>
+
+            <!-- Two-Column Interactive Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left Column: Visual Vector SVG Viewport -->
+                <div class="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center relative min-h-[400px] lg:min-h-[480px]">
+                    <div class="absolute top-4 left-4 flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-[10px] font-mono text-slate-500 font-bold tracking-wider" id="svg-telemetry">DIAGNOSTIC ACTIVE</span>
+                    </div>
+
+                    <!-- SVG Containers dynamically swapped -->
+                    <div class="w-full max-w-[500px] h-[320px] relative flex items-center justify-center">
+                        
+                        <!-- CHEETAH VECTOR SVG -->
+                        <svg id="svg-cheetah" class="w-full h-full text-emerald-400 transition-all duration-500" viewBox="0 0 500 300" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <!-- Cheetah Silhouette skeletonized -->
+                            <path d="M50,150 C70,140 100,120 120,130 C150,140 180,105 220,100 C270,95 310,120 350,100 C370,90 390,75 410,75 C420,75 430,85 435,95 C430,105 415,110 405,110 C380,110 370,125 360,135 C345,150 330,150 320,170 C310,190 330,220 330,250 C300,240 295,190 280,175 C250,160 210,160 190,175 C180,185 185,220 185,250 C165,240 160,190 150,175 C130,155 100,160 85,175 C75,185 75,220 70,250 C60,240 55,200 55,180 Z" stroke-dasharray="2 2" class="opacity-35" />
+                            <path d="M220,100 C270,95 310,120 350,100 C370,90 390,75 410,75 C420,75 430,85 435,95" class="stroke-emerald-500" stroke-width="2.5" />
+                            <!-- Tail -->
+                            <path d="M50,150 C35,160 20,190 35,220 C42,235 55,240 65,245" class="opacity-60" stroke-width="2" />
+                            
+                            <!-- Interactive Hotspot Nodes (Cheetah) -->
+                            <!-- Head -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('cheetah', 'head')">
+                                <circle cx="415" cy="90" r="16" class="fill-emerald-500/10 stroke-emerald-500 group-hover:fill-emerald-500/20 transition-all duration-300" />
+                                <circle cx="415" cy="90" r="4" class="fill-emerald-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="415" cy="90" r="24" class="stroke-emerald-500/20 animate-ping" />
+                            </g>
+                            <!-- Spine -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('cheetah', 'spine')">
+                                <circle cx="270" cy="110" r="16" class="fill-emerald-500/10 stroke-emerald-500 group-hover:fill-emerald-500/20 transition-all duration-300" />
+                                <circle cx="270" cy="110" r="4" class="fill-emerald-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="270" cy="110" r="24" class="stroke-emerald-500/20 animate-ping" />
+                            </g>
+                            <!-- Leg / Claws -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('cheetah', 'legs')">
+                                <circle cx="185" cy="230" r="16" class="fill-emerald-500/10 stroke-emerald-500 group-hover:fill-emerald-500/20 transition-all duration-300" />
+                                <circle cx="185" cy="230" r="4" class="fill-emerald-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="185" cy="230" r="24" class="stroke-emerald-500/20 animate-ping" />
+                            </g>
+                            <!-- Tail -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('cheetah', 'tail')">
+                                <circle cx="35" cy="220" r="16" class="fill-emerald-500/10 stroke-emerald-500 group-hover:fill-emerald-500/20 transition-all duration-300" />
+                                <circle cx="35" cy="220" r="4" class="fill-emerald-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="35" cy="220" r="24" class="stroke-emerald-500/20 animate-ping" />
+                            </g>
+                        </svg>
+
+                        <!-- WHALE VECTOR SVG (Initially Hidden) -->
+                        <svg id="svg-whale" class="w-full h-full text-cyan-400 transition-all duration-500 hidden" viewBox="0 0 500 300" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <!-- Whale Silhouette -->
+                            <path d="M40,150 C70,100 150,80 280,80 C360,80 430,110 460,130 C470,135 480,125 485,115 C485,135 485,165 485,185 C480,175 470,165 460,170 C430,190 360,220 280,220 C150,220 70,200 40,150" class="opacity-35" stroke-dasharray="2 2" />
+                            <path d="M100,150 C130,140 180,140 220,150 C260,160 300,165 350,155 C370,150 400,135 420,130" class="stroke-cyan-500" stroke-width="2" />
+                            <path d="M40,150 C10,140 10,160 40,150" class="stroke-cyan-500" stroke-width="2.5" />
+                            
+                            <!-- Interactive Hotspot Nodes (Whale) -->
+                            <!-- Baleen (Mouth) -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('whale', 'baleen')">
+                                <circle cx="430" cy="150" r="16" class="fill-cyan-500/10 stroke-cyan-500 group-hover:fill-cyan-500/20 transition-all duration-300" />
+                                <circle cx="430" cy="150" r="4" class="fill-cyan-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="430" cy="150" r="24" class="stroke-cyan-500/20 animate-ping" />
+                            </g>
+                            <!-- Huge Heart -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('whale', 'heart')">
+                                <circle cx="280" cy="140" r="16" class="fill-cyan-500/10 stroke-cyan-500 group-hover:fill-cyan-500/20 transition-all duration-300" />
+                                <circle cx="280" cy="140" r="4" class="fill-cyan-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="280" cy="140" r="24" class="stroke-cyan-500/20 animate-ping" />
+                            </g>
+                            <!-- Blowhole -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('whale', 'blowhole')">
+                                <circle cx="340" cy="90" r="16" class="fill-cyan-500/10 stroke-cyan-500 group-hover:fill-cyan-500/20 transition-all duration-300" />
+                                <circle cx="340" cy="90" r="4" class="fill-cyan-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="340" cy="90" r="24" class="stroke-cyan-500/20 animate-ping" />
+                            </g>
+                        </svg>
+
+                        <!-- FALCON VECTOR SVG (Initially Hidden) -->
+                        <svg id="svg-falcon" class="w-full h-full text-violet-400 transition-all duration-500 hidden" viewBox="0 0 500 300" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <!-- Falcon Silhouette -->
+                            <path d="M250,80 C270,90 300,90 330,80 C360,70 410,50 440,70 C420,100 370,120 340,130 C320,135 300,145 280,165 C260,185 240,230 240,250 C230,220 210,185 190,165 C170,145 150,135 130,130 C100,120 50,100 30,70 C60,50 110,70 140,80 C170,90 200,90 220,80 C230,75 240,70 250,80" class="opacity-35" stroke-dasharray="2 2" />
+                            <!-- Wing Line -->
+                            <path d="M140,80 L250,130 L360,80" class="stroke-violet-500" stroke-width="1.5" />
+                            
+                            <!-- Interactive Hotspot Nodes (Falcon) -->
+                            <!-- Nares (Nostrils) -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('falcon', 'nares')">
+                                <circle cx="250" cy="90" r="16" class="fill-violet-500/10 stroke-violet-500 group-hover:fill-violet-500/20 transition-all duration-300" />
+                                <circle cx="250" cy="90" r="4" class="fill-violet-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="250" cy="90" r="24" class="stroke-violet-500/20 animate-ping" />
+                            </g>
+                            <!-- Eyes -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('falcon', 'eyes')">
+                                <circle cx="230" cy="100" r="16" class="fill-violet-500/10 stroke-violet-500 group-hover:fill-violet-500/20 transition-all duration-300" />
+                                <circle cx="230" cy="100" r="4" class="fill-violet-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="230" cy="100" r="24" class="stroke-violet-500/20 animate-ping" />
+                            </g>
+                            <!-- Wings -->
+                            <g class="cursor-pointer group" onclick="showPartInfo('falcon', 'wings')">
+                                <circle cx="370" cy="95" r="16" class="fill-violet-500/10 stroke-violet-500 group-hover:fill-violet-500/20 transition-all duration-300" />
+                                <circle cx="370" cy="95" r="4" class="fill-violet-400 group-hover:r-6 transition-all duration-300" />
+                                <circle cx="370" cy="95" r="24" class="stroke-violet-500/20 animate-ping" />
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <span class="text-[10px] text-slate-500 font-bold tracking-widest block uppercase">INTERACTION PROMPT</span>
+                        <p class="text-xs text-slate-400 mt-1">光るポイントをクリックして各パーツの構造と極限進化の秘密をロードします。</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Smoothly Swapping Info Panel -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl backdrop-blur-sm" id="info-panel">
+                        <!-- Dynamic Info Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                            <div>
+                                <span id="info-part-tag" class="text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase">CHEETAH / SPINE</span>
+                                <h4 id="info-part-name" class="text-2xl font-black text-white mt-1">極限までしなる脊椎</h4>
+                            </div>
+                            <span id="info-part-icon" class="text-3xl">🦴</span>
+                        </div>
+
+                        <!-- Dynamic Info Body -->
+                        <div class="space-y-6">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-1">構造の秘密 (STRUCTURE DETAILS)</h5>
+                                <p id="info-part-desc" class="text-slate-300 leading-relaxed text-sm">
+                                    チーターの背骨は、まるでスプリング（バネ）のような驚異的な柔軟性を持っています。走る際、前脚と後脚が交差するほど背骨を大きく曲げてエネルギーを溜め込み、一気に伸ばして爆発的な歩幅（ストライド）を生み出します。
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800/80">
+                                <h5 class="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1.5 flex items-center space-x-1">
+                                    <span>💡</span>
+                                    <span>ココが面白い！ (EVOLUTIONARY INSIGHT)</span>
+                                </h5>
+                                <p id="info-part-fun" class="text-slate-300 text-sm leading-relaxed">
+                                    一歩走るだけでなんと最大7メートル以上進みます。最高速度は時速100キロを超えますが、このしなる背骨のおかげで、走っている最中でも急激な方向転換が可能なのです。
+                                </p>
+                            </div>
+
+                            <!-- Spec Indicator Bars -->
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-3">生体スペックシステム分析</h5>
+                                <div class="space-y-3" id="info-specs">
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-400 mb-1">
+                                            <span>柔軟性 (Flexibility)</span>
+                                            <span class="text-emerald-400 font-cyber font-bold">95%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-emerald-500 h-full w-[95%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs font-semibold text-slate-400 mb-1">
+                                            <span>エネルギー蓄積度 (Energy Capture)</span>
+                                            <span class="text-emerald-400 font-cyber font-bold">90%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-emerald-500 h-full w-[90%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 3: QUIZ (INTERESTING HABITS) -->
+        <section id="tab-quiz" class="tab-content transition-all duration-500 hidden opacity-0 transform translate-y-4">
+            <div class="mb-8">
+                <span class="text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase">BIOLOGY KNOWLEDGE TRIVIA</span>
+                <h3 class="text-2xl sm:text-3xl font-black text-white mt-1">生態おもしろ雑学クイズ</h3>
+                <p class="text-slate-400 text-sm mt-1">教科書には載っていない、動物たちのリアルで過酷、かつコミカルな生態から出題！</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                <!-- Quiz Container -->
+                <div id="quiz-box" class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl backdrop-blur-sm shadow-xl">
+                    
+                    <!-- Progress and Telemetry -->
+                    <div class="flex justify-between items-center mb-6">
+                        <span id="quiz-number" class="text-xs font-mono text-emerald-500 font-extrabold tracking-widest uppercase font-cyber">QUESTION 01 / 10</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-mono text-slate-500">ACCURACY:</span>
+                            <span id="quiz-accuracy" class="text-xs font-mono text-white font-bold font-cyber">100%</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-950 h-2 rounded-full mb-8 overflow-hidden">
+                        <div id="quiz-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full w-[10%] transition-all duration-300"></div>
+                    </div>
+
+                    <!-- Question Block -->
+                    <div class="space-y-6 mb-8">
+                        <span id="quiz-category" class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-wider rounded-lg uppercase">鳥類のふしぎ</span>
+                        <h4 id="quiz-question" class="text-xl sm:text-2xl font-black text-slate-100 leading-snug">
+                            ハヤブサが急降下して獲物を捕らえるとき、スピードを落とさないために「鼻の穴」にある特別な構造とは何でしょう？
+                        </h4>
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quiz-options">
+                        <!-- Dynamic Buttons go here -->
+                        <button class="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500 text-left text-slate-300 hover:text-white transition-all duration-300 font-medium">
+                            A. コーン状の突起で気流を逃がす
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Quiz Results Panel (Initially Hidden) -->
+                <div id="quiz-results" class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl backdrop-blur-sm shadow-xl text-center hidden space-y-8 animate-fadeIn">
+                    <div class="space-y-2">
+                        <span class="text-xs font-mono text-amber-500 font-bold tracking-widest uppercase">EVALUATION REPORT</span>
+                        <h4 class="text-3xl font-black text-white">クイズ完了！診断結果</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
+                        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800/80">
+                            <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase mb-1">正解率 (Accuracy)</div>
+                            <div id="res-score" class="text-4xl font-extrabold font-cyber text-emerald-400">80%</div>
+                            <div class="text-xs text-slate-400 mt-2" id="res-correct-fraction">8 / 10 正解</div>
+                        </div>
+                        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800/80 md:col-span-2">
+                            <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase mb-1">獲得した最高称号 (Unlocked Rank)</div>
+                            <div id="res-rank" class="text-2xl font-black text-transparent bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 bg-clip-text">骨格マイスター</div>
+                            <div class="text-xs text-slate-400 mt-2" id="res-rank-desc">動物の体の作りを網羅し始めた、未来の生物学者。</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button onclick="resetQuiz()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-black tracking-wider transition-all duration-300">
+                            もう一度挑戦する
+                        </button>
+                        <button onclick="switchTab('rank')" class="px-8 py-4 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white font-bold transition-all duration-300">
+                            すべての称号を見る
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: ACHIEVEMENTS & TITLES -->
+        <section id="tab-rank" class="tab-content transition-all duration-500 hidden opacity-0 transform translate-y-4">
+            <div class="mb-8">
+                <span class="text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase">ACHIEVEMENT LADDER</span>
+                <h3 class="text-2xl sm:text-3xl font-black text-white mt-1">生態マスター称号・実績</h3>
+                <p class="text-slate-400 text-sm mt-1">クイズで高い正解率をマークすることで、最高峰の動物研究称号をアンロックしましょう！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="badges-container">
+                <!-- Badges dynamically rendered below -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- OVERLAY FEEDBACK MODAL (Instead of alert()) -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center transform scale-90 transition-all duration-300" id="feedback-card">
+            <div class="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6" id="feedback-icon-box">
+                <!-- Success/Error SVG dynamically goes here -->
+            </div>
+            <h5 class="text-2xl font-black text-white mb-2" id="feedback-title">正解！</h5>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6" id="feedback-desc">
+                素晴らしい解説メッセージが入ります。
+            </p>
+            <button onclick="closeFeedbackModal()" class="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-black tracking-wider hover:bg-emerald-400 transition-colors duration-300 shadow-lg shadow-emerald-500/10">
+                次へ進む
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/60 bg-slate-950 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-xs tracking-wider">
+                &copy; 2026 ANIMALIA. すべての生命の知性に敬意を込めて。
+            </p>
+        </div>
+    </footer>
+
+    <!-- INTERACTION LOGIC & DATABASE -->
+    <script>
+        // 1. Data Definitions
+        const anatomyData = {
+            cheetah: {
+                head: {
+                    name: "加速のための小型頭部",
+                    icon: "🐆",
+                    tag: "CHEETAH / CRANIUM",
+                    desc: "チーターの頭は極限まで小さく設計されています。これにより、時速100キロを超える超高速走行時の「空気抵抗」を徹底的にカットします。また、一度に大量の空気を取り込めるように鼻腔（鼻の奥）が極めて広く発達しています。",
+                    fun: "頭部を徹底的に軽量化したツケとして、顎を閉じる筋肉が弱く、噛む力はそこまで強くありません。そのため獲物を捕らえても他の大型肉食獣に奪われがちです。",
+                    specs: [
+                        { label: "空気抵抗カット率 (Aerodynamic efficiency)", value: "98%" },
+                        { label: "酸素吸入効率 (Oxygen ingestion)", value: "92%" }
+                    ]
+                },
+                spine: {
+                    name: "極限までしなる脊椎",
+                    icon: "🦴",
+                    tag: "CHEETAH / SPINE",
+                    desc: "チーターの背骨は、まるでスプリング（バネ）のような驚異的な柔軟性を持っています。走る際、前脚と後脚が交差するほど背骨を大きく曲げてエネルギーを溜め込み、一気に伸ばして爆発的な歩幅（ストライド）を生み出します。",
+                    fun: "一歩走るだけでなんと最大7メートル以上進みます。最高速度は時速100キロを超えますが、このしなる背骨のおかげで、走っている最中でも急激な方向転換が可能なのです。",
+                    specs: [
+                        { label: "柔軟性 (Flexibility)", value: "95%" },
+                        { label: "エネルギー蓄積度 (Energy Capture)", value: "90%" }
+                    ]
+                },
+                legs: {
+                    name: "スパイクのような非格納爪",
+                    icon: "🐾",
+                    tag: "CHEETAH / CLAWS",
+                    desc: "猫科動物の多くは爪を完全に引っ込めますが、チーターの爪は「常に出しっぱなし」になっています。これは陸上競技用の「スパイクシューズ」と全く同じ役割を担っており、地面をガッチリとグリップして超高速のダッシュを支えます。",
+                    fun: "爪が常に地面に触れているため、他の猫科のように爪が鋭く尖っていません。武器というよりは、完全に走るためのサスペンションシステムとして使われています。",
+                    specs: [
+                        { label: "接地摩擦力 (Grip index)", value: "94%" },
+                        { label: "最高速貢献度 (Speed contribution)", value: "96%" }
+                    ]
+                },
+                tail: {
+                    name: "方向を支配するラダー尾",
+                    icon: "🐕",
+                    tag: "CHEETAH / TAIL",
+                    desc: "チーターの長く、筋肉質でズッシリと重い尻尾は、空中でブレをなくす「ラダー（舵）」の役割を果たします。超高速でジグザグに走る獲物を追う際、尻尾を曲がりたい方向と「逆」に素早くスイングして、遠心力を相殺します。",
+                    fun: "もしチーターに尻尾がなかったら、急旋回した時に激しくスピンアウトしてしまいます。物理演算マシン並みの重心コントロールをこの尻尾が瞬時に行っています。",
+                    specs: [
+                        { label: "重心バランス能力 (Balance system)", value: "97%" },
+                        { label: "旋回安定性 (Turn stabilization)", value: "95%" }
+                    ]
+                }
+            },
+            whale: {
+                baleen: {
+                    name: "巨大フィルター・クジラヒゲ",
+                    icon: "🐋",
+                    tag: "BLUE WHALE / BALEEN",
+                    desc: "シロナガスクジラには歯がありません。代わりに上アゴから生えているのが、硬いタンパク質（毛髪と同じケラチン）でできた数千枚の「クジラヒゲ」です。これにより、大量の水と一緒に飲み込んだオキアミなどのエサを一気に濾し取ります。",
+                    fun: "一口で飲み込む水の量はなんと約90トン（プールの水に相当）！ その中からヒゲのフィルターだけを使ってエサだけを残し、余分な水は舌で押し出します。",
+                    specs: [
+                        { label: "濾過スピード (Filtration Rate)", value: "96%" },
+                        { label: "エネルギー摂取効率 (Feeding capacity)", value: "99%" }
+                    ]
+                },
+                heart: {
+                    name: "車サイズの心臓と巨大血管",
+                    icon: "❤️",
+                    tag: "BLUE WHALE / HEART",
+                    desc: "地球の歴史上、最大とされるシロナガスクジラの心臓は重さ約180kg、軽自動車ほどの巨大さがあります。主動脈（太い血管）は、人間の子どもが中に入って泳げてしまうほどぶっとい設計になっています。",
+                    fun: "これほど巨大ですが、心臓の拍動はとてもゆっくりで、深く潜水しているときは「1分間にわずか数回」しか脈打ちません。少ない酸素を全身に極めて効率よく循環させています。",
+                    specs: [
+                        { label: "ポンプ出力 (Pump capacity)", value: "100%" },
+                        { label: "超省エネ駆動率 (Energy conservation)", value: "95%" }
+                    ]
+                },
+                blowhole: {
+                    name: "自動シャッター式呼吸孔",
+                    icon: "💨",
+                    tag: "BLUE WHALE / BLOWHOLE",
+                    desc: "クジラの背中にある潮吹き穴は、進化の過程で「鼻の穴」が頭頂部に移動したものです。人間と違い、呼吸（肺）と消化管（口・胃）が完全に分離しているため、水中でエサをたくさん飲み込んでも絶対に気管に水が入りません。",
+                    fun: "潜水するときは、強力な筋肉によってバルブ（弁）が完全に『自動ロック』されます。潮吹きは水を噴いているのではなく、肺の暖かい湿った空気が一気に吐き出されて冷やされ、水蒸気になって見えている現象です。",
+                    specs: [
+                        { label: "防水気密性 (Waterproof seal)", value: "100%" },
+                        { label: "肺活量スケール (Lung volume)", value: "98%" }
+                    ]
+                }
+            },
+            falcon: {
+                nares: {
+                    name: "音速対応の鼻腔バイパス",
+                    icon: "👃",
+                    tag: "FALCON / NARES",
+                    desc: "時速300km以上の猛スピードで急降下する際、まともに空気を吸うと高圧で肺が破裂してしまいます。ハヤブサの鼻の穴の真ん中には「小さなコーン状の突起」があり、これがジェットエンジンの吸気口のように機能して、激しい空気の流れを横にそらし、安全に呼吸を確保します。",
+                    fun: "このハヤブサの鼻の構造は、人間が開発した超音速ジェット戦闘機『SR-71 ブラックバード』のエンジンインレットの設計モデルにも採用されました。大自然のバイオミミクリー（生体模倣技術）です。",
+                    specs: [
+                        { label: "気圧減衰効率 (Pressure mitigation)", value: "99%" },
+                        { label: "バイオ模倣技術度 (Biomimicry potential)", value: "96%" }
+                    ]
+                },
+                eyes: {
+                    name: "高解像度の高速追尾センサー",
+                    icon: "👁️",
+                    tag: "FALCON / VISION",
+                    desc: "ハヤブサの視力は人間の約8倍。1キロ以上離れた場所を歩く小さな昆虫やウサギを正確に認識できます。さらに瞬膜（サードアイリッド）と呼ばれる透明なまぶたを持っており、これを閉じることで超高速飛行中も目を乾燥やゴミから完璧に保護します。",
+                    fun: "目の周りの黒い模様は、野球選手が目の下に黒いシールを貼るのと同じ「反射防止（アイブラック）」の役割を果たします。ギラギラと照りつける太陽光を吸収し、標的を絶対に見失いません。",
+                    specs: [
+                        { label: "解像フォーカス (Visual acuity)", value: "99%" },
+                        { label: "防塵シャッター度 (Shield efficiency)", value: "92%" }
+                    ]
+                },
+                wings: {
+                    name: "空気力学の極致・鎌状翼",
+                    icon: "🪶",
+                    tag: "FALCON / WINGS",
+                    desc: "ハヤブサの羽は、グライダーのように幅広ではなく、戦闘機のように細く鋭く尖った「鎌型」をしています。この形状は空気抵抗を極限まで低減させ、上空からの急降下時に、物理法則限界に近いハイスピードを生み出します。",
+                    fun: "獲物をハンティングする瞬間の時速は380km以上に達します。これは新幹線よりも速い速度であり、鳥類だけでなく「地球上のすべての動物の中で最速」の称号を持っています。",
+                    specs: [
+                        { label: "流体力学クリア率 (Aerodynamics)", value: "98%" },
+                        { label: "限界スピード値 (Speed threshold)", value: "100%" }
+                    ]
+                }
+            }
+        };
+
+        const quizData = [
+            {
+                q: "ハヤブサが時速300km以上で急降下するとき、肺が破裂しないために『鼻の穴』にある特殊な構造は？",
+                a: ["空気の流れを整えるコーン（円錐）状の骨がある", "逆流を防ぐ完全な肉厚のフタがある", "呼吸を完全に止めて喉に酸素をためる袋がある", "鼻から空気を入れず耳から呼吸する"],
+                correct: 0,
+                category: "鳥類のふしぎ",
+                desc: "ハヤブサの鼻のコーン状の突起は、流入する超高速の空気の圧力を分散させ、呼吸を安定させます。ジェット戦闘機のエンジンのインレットもこれを参考に開発されました。"
+            },
+            {
+                q: "チーターが時速100キロを超える超高速で走りながら急激に方向転換できるのはなぜ？",
+                a: ["長い尻尾を曲がりたい方向と「逆」に大きく振るから", "足の裏から粘着性の汗が出るから", "角を曲がるときだけ一時的に4本足から2本足になるから", "体をねじって耳を地面にこすりつけるから"],
+                correct: 0,
+                category: "哺乳類のバイオ力学",
+                desc: "チーターの太く重い尻尾は空中舵（ラダー）として機能します。遠心力を打ち消すため、尻尾をカーブの「逆方向」に振ることで抜群のバランスを維持しています。"
+            },
+            {
+                q: "シロナガスクジラが1回のエサやり（口を開ける動作）で体内に吸い込む水の量は？",
+                a: ["約90トン（プールの水に相当）", "約1トン（お風呂5回分）", "約10トン（大型トラック満載分）", "口は開けず皮膚のシワから吸収する"],
+                correct: 0,
+                category: "海の絶対王者",
+                desc: "1回でプールほぼ1つ分に相当する約90トンを飲み込みます。クジラヒゲの凄まじい濾過システムで水だけを排出し、オキアミだけをこし取って食べます。"
+            },
+            {
+                q: "深海にすむイカの仲間「ダイオウイカ」の目は、暗い深海で光をかき集めるためにどのくらいの大きさでしょう？",
+                a: ["人間の頭（バレーボール）くらい", "一円玉くらい", "サッカー場くらい", "光が全くないので退化して存在しない"],
+                correct: 0,
+                category: "深海のふしぎ",
+                desc: "ダイオウイカの目は直径約30cmに達し、生物界最大級です。これにより、深海に届くわずかな光や、捕食者であるマッコウクジラが発する生物発光を視認しています。"
+            },
+            {
+                q: "カタツムリには歯がありますが、驚くべきことに彼らには全部で何本の歯があるでしょう？",
+                a: ["約1万本〜2万本以上", "人間と同じ32本", "0本（ヤスリの舌のみ）", "たった2本"],
+                correct: 0,
+                category: "超・超極小構造",
+                desc: "カタツムリには「歯舌（しぜつ）」と呼ばれる帯状のヤスリのような器官があり、そこには1万〜2万本以上の極小の歯が並んでいます。これでコンクリートなども削って食べます。"
+            },
+            {
+                q: "コウモリが暗闇の中で障害物にぶつからずに飛べるのは、自ら何を出して周囲を探知しているから？",
+                a: ["超音波（エコーロケーション）", "超音波ではなく赤外線の光", "目から出る微弱なレーザー", "鋭い嗅覚のオーラ"],
+                correct: 0,
+                category: "哺乳類のバイオ力学",
+                desc: "コウモリは喉から人間には聞こえない超音波を発し、それが物体に跳ね返ってくる時間や変化をキャッチすることで、精密な3Dマップを脳内に描いて飛んでいます。"
+            },
+            {
+                q: "サメの皮膚は「サメ肌」として有名ですが、このざらざらした鱗にはどんな驚くべき効果があるでしょう？",
+                a: ["水の抵抗を減らして超高速で泳げる", "電撃を放って獲物を気絶させる", "砂の中に隠れるときに体温を下げる", "他のサメとくっついて合体するため"],
+                correct: 0,
+                category: "海の絶対王者",
+                desc: "サメの鱗は「リブレット構造」という微細な溝になっており、これにより水の摩擦抵抗が劇的に減少します。水泳の水着や航空機の表面素材にも応用されています。"
+            },
+            {
+                q: "ハチドリは空中で完全に静止する「ホバリング」ができます。これを支える羽ばたきの回数は1秒間に約何回でしょう？",
+                a: ["約50〜80回", "約5回", "約500回（蚊と同じレベル）", "一度羽ばたけば1分間浮いていられる"],
+                correct: 0,
+                category: "鳥類のふしぎ",
+                desc: "ハチドリは1秒間に約50〜80回もの超高速羽ばたきをします。これには膨大なエネルギーが必要なため、花の蜜（糖分）を常に摂取し続ける必要があります。"
+            },
+            {
+                q: "ペンギンは鳥類ですが空を飛べません。しかし水中をまるで飛ぶように泳げます。この驚異の水中推進力を生む翼の骨格的特徴は？",
+                a: ["骨がギッシリ重く詰まっていて平らなプレート状になっている", "空を飛ぶ鳥と同じようにスカスカで軽い", "骨がなく100%筋肉だけでできている", "関節が多すぎてクネクネ曲がる"],
+                correct: 0,
+                category: "極限への適応",
+                desc: "空を飛ぶ鳥の骨は軽さを追求してストローのように空洞ですが、水中を潜るペンギンの骨（フリッパー）は、激しい水圧に耐え浮力を抑えるため、重く頑丈にギッシリと詰まっています。"
+            },
+            {
+                q: "カメレオンの舌は獲物を捕らえるときに驚異的なスピードで伸びます。その最大加速力はどれくらい？",
+                a: ["ロケット戦闘機を超えるG（加速度）", "新幹線と同じゆっくりな加速", "歩くスピードと大差ない", "音速を超えるジェット機と同じ時速1000km"],
+                correct: 0,
+                category: "極限への適応",
+                desc: "カメレオンの舌はわずか100分の1秒で獲物に到達します。その加速度は、ジェット戦闘機の操縦士が耐える重力の約20倍（20G）に達するバイオ・カタパルトシステムです。"
+            }
+        ];
+
+        const rankBadges = [
+            { threshold: 0, title: "アマチュア観察員", level: "LV_01", desc: "動物の世界への第一歩を踏み出した好奇心旺盛なチャレンジャー。まだ謎は多い。", bg: "from-slate-800 to-slate-900 border-slate-700 text-slate-400" },
+            { threshold: 3, title: "アニマルハンター", level: "LV_02", desc: "動物たちの面白い生態の知識に触れ、野生の勘が研ぎ澄まされつつあるハンター。", bg: "from-cyan-950/40 to-slate-900 border-cyan-800 text-cyan-400" },
+            { threshold: 7, title: "骨格マイスター", level: "LV_03", desc: "生物の身体構造の秘密、極限進化のロジックを解き明かし始めた一流のオタク。", bg: "from-violet-950/40 to-slate-900 border-violet-800 text-violet-400" },
+            { threshold: 10, title: "至高の動物神", level: "LV_04", desc: "全知全能の進化をすべて理解し、生命の究極設計図を完全ハックした唯一無二の存在。", bg: "from-emerald-950/50 to-slate-900 border-emerald-500 text-emerald-400 font-cyber glow-active" }
+        ];
+
+        // 2. Global State Variables
+        let currentTab = 'home';
+        let selectedAnimalId = 'cheetah';
+        let currentQuizIndex = 0;
+        let score = 0;
+        let activeBadgeIndex = 0;
+
+        // 3. Application Initialization
+        window.onload = function() {
+            // Check local storage for high score
+            const savedScore = localStorage.getItem('animalia_high_score');
+            if (savedScore !== null) {
+                score = parseInt(savedScore);
+            }
+            updateTelemetry();
+            updateRankBadge();
+            renderBadges();
+            
+            // Default view selection
+            showPartInfo('cheetah', 'spine');
+        }
+
+        // 4. Navigation & Tab Control
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+                tab.classList.remove('opacity-100', 'translate-y-0');
+                tab.classList.add('opacity-0', 'translate-y-4');
+            });
+            
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.remove('hidden');
+            // Timeout to trigger CSS transition smoothly
+            setTimeout(() => {
+                activeTab.classList.remove('opacity-0', 'translate-y-4');
+                activeTab.classList.add('opacity-100', 'translate-y-0');
+            }, 50);
+
+            // Button Highlight update
+            ['explore', 'quiz', 'rank'].forEach(id => {
+                const btn = document.getElementById('nav-' + id);
+                if (id === tabId) {
+                    btn.classList.add('bg-emerald-500', 'text-slate-950', 'border-emerald-400', 'neon-glow');
+                    btn.classList.remove('bg-slate-900', 'text-slate-300', 'border-slate-800');
+                } else {
+                    btn.classList.remove('bg-emerald-500', 'text-slate-950', 'border-emerald-400', 'neon-glow');
+                    btn.classList.add('bg-slate-900', 'text-slate-300', 'border-slate-800');
+                }
+            });
+
+            currentTab = tabId;
+
+            // Trigger specific page initiations
+            if (tabId === 'quiz') {
+                renderQuizQuestion();
+            } else if (tabId === 'rank') {
+                renderBadges();
+            }
+        }
+
+        // 5. Interactive Anatomy Explanations
+        function selectAnimal(animalId) {
+            selectedAnimalId = animalId;
+            
+            // Swap active button state
+            ['cheetah', 'whale', 'falcon'].forEach(id => {
+                const btn = document.getElementById('btn-animal-' + id);
+                if (id === animalId) {
+                    btn.className = "px-5 py-3 rounded-2xl text-sm font-bold tracking-wide transition-all duration-300 flex items-center space-x-2.5 bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/10";
+                } else {
+                    btn.className = "px-5 py-3 rounded-2xl text-sm font-bold tracking-wide transition-all duration-300 flex items-center space-x-2.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-400 hover:text-white";
+                }
+            });
+
+            // Swap active SVG
+            ['cheetah', 'whale', 'falcon'].forEach(id => {
+                const svg = document.getElementById('svg-' + id);
+                if (id === animalId) {
+                    svg.classList.remove('hidden');
+                } else {
+                    svg.classList.add('hidden');
+                }
+            });
+
+            // Set dynamic header visual config
+            const statusLabel = document.getElementById('svg-telemetry');
+            if (animalId === 'cheetah') {
+                statusLabel.innerText = "🐆 CHEETAH TELEMETRY: STABLE";
+                showPartInfo('cheetah', 'spine');
+            } else if (animalId === 'whale') {
+                statusLabel.innerText = "🐋 BLUE WHALE TELEMETRY: LIVE";
+                showPartInfo('whale', 'heart');
+            } else if (animalId === 'falcon') {
+                statusLabel.innerText = "🦅 PEREGRINE FALCON TELEMETRY: LOCKED";
+                showPartInfo('falcon', 'nares');
+            }
+        }
+
+        function showPartInfo(animal, partKey) {
+            const data = anatomyData[animal][partKey];
+            if (!data) return;
+
+            // Smooth transition animation on details block
+            const panel = document.getElementById('info-panel');
+            panel.classList.add('opacity-50', 'scale-98');
+
+            setTimeout(() => {
+                document.getElementById('info-part-tag').innerText = data.tag;
+                document.getElementById('info-part-name').innerText = data.name;
+                document.getElementById('info-part-icon').innerText = data.icon;
+                document.getElementById('info-part-desc').innerText = data.desc;
+                document.getElementById('info-part-fun').innerText = data.fun;
+
+                // Color accent theme swapping
+                const tagEl = document.getElementById('info-part-tag');
+                if (animal === 'cheetah') {
+                    tagEl.className = "text-xs font-mono text-emerald-500 font-bold tracking-widest uppercase";
+                } else if (animal === 'whale') {
+                    tagEl.className = "text-xs font-mono text-cyan-500 font-bold tracking-widest uppercase";
+                } else if (animal === 'falcon') {
+                    tagEl.className = "text-xs font-mono text-violet-500 font-bold tracking-widest uppercase";
+                }
+
+                // Render dynamically scaled status parameters
+                let specsHTML = "";
+                data.specs.forEach(spec => {
+                    const percent = parseInt(spec.value);
+                    const barColor = animal === 'cheetah' ? 'bg-emerald-500' : (animal === 'whale' ? 'bg-cyan-500' : 'bg-violet-500');
+                    const textAccent = animal === 'cheetah' ? 'text-emerald-400' : (animal === 'whale' ? 'text-cyan-400' : 'text-violet-400');
+                    specsHTML += `
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-400 mb-1">
+                                <span>${spec.label}</span>
+                                <span class="${textAccent} font-cyber font-bold">${spec.value}</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                                <div class="${barColor} h-full" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('info-specs').innerHTML = specsHTML;
+
+                panel.classList.remove('opacity-50', 'scale-98');
+            }, 120);
+        }
+
+        // 6. Interactive Game Mechanics (Quiz)
+        function renderQuizQuestion() {
+            // Hide results panel, show core quiz container
+            document.getElementById('quiz-box').classList.remove('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+
+            const current = quizData[currentQuizIndex];
+            
+            // Set Progress Indicators
+            const displayNum = currentQuizIndex + 1;
+            document.getElementById('quiz-number').innerText = `QUESTION 0${displayNum} / 10`;
+            const accuracy = Math.round((score / (currentQuizIndex || 1)) * 100);
+            document.getElementById('quiz-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('quiz-bar').style.width = `${displayNum * 10}%`;
+
+            // Populate Text Fields
+            document.getElementById('quiz-category').innerText = current.category;
+            document.getElementById('quiz-question').innerText = current.q;
+
+            // Generate Answer Choice Grids
+            const container = document.getElementById('quiz-options');
+            container.innerHTML = "";
+            current.a.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = "p-5 rounded-2xl bg-slate-950 border border-slate-800/80 hover:border-emerald-500 text-left text-slate-300 hover:text-white transition-all duration-300 font-medium hover:bg-slate-900/40 relative overflow-hidden group";
+                btn.onclick = () => submitAnswer(index);
+                btn.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <span class="font-cyber font-bold text-emerald-500 text-sm py-0.5 px-2 bg-emerald-500/10 rounded border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-slate-950 transition-colors duration-300">${String.fromCharCode(65 + index)}</span>
+                        <span class="text-sm sm:text-base leading-relaxed">${option}</span>
+                    </div>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function submitAnswer(selectedIndex) {
+            const current = quizData[currentQuizIndex];
+            const isCorrect = selectedIndex === current.correct;
+
+            if (isCorrect) {
+                score++;
+                // Incrementally save High score inside localized sandbox storage
+                const highest = localStorage.getItem('animalia_high_score') || 0;
+                if (score > highest) {
+                    localStorage.setItem('animalia_high_score', score);
+                }
+            }
+
+            // Sync global state values to visuals
+            updateTelemetry();
+            updateRankBadge();
+
+            // Display feedback overlay window instead of native alerts
+            showFeedbackModal(isCorrect, current.desc);
+        }
+
+        function showFeedbackModal(isCorrect, description) {
+            const modal = document.getElementById('feedback-modal');
+            const card = document.getElementById('feedback-card');
+            const iconBox = document.getElementById('feedback-icon-box');
+            const title = document.getElementById('feedback-title');
+            const desc = document.getElementById('feedback-desc');
+
+            if (isCorrect) {
+                iconBox.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400";
+                iconBox.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+                title.innerText = "正解！EXCELLENT";
+                title.className = "text-2xl font-black text-emerald-400 mb-2 font-cyber neon-text";
+            } else {
+                iconBox.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 bg-red-500/10 border border-red-500/30 text-red-400";
+                iconBox.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>`;
+                title.innerText = "不正解！SYSTEM ALERT";
+                title.className = "text-2xl font-black text-red-400 mb-2 font-cyber";
+            }
+
+            desc.innerText = description;
+
+            // Trigger visual transitions
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-90');
+            card.classList.add('scale-100');
+        }
+
+        function closeFeedbackModal() {
+            const modal = document.getElementById('feedback-modal');
+            const card = document.getElementById('feedback-card');
+
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-90');
+
+            // Move to next question flow
+            if (currentQuizIndex < quizData.length - 1) {
+                currentQuizIndex++;
+                renderQuizQuestion();
+            } else {
+                showQuizResults();
+            }
+        }
+
+        function showQuizResults() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+
+            const percent = Math.round((score / quizData.length) * 100);
+            document.getElementById('res-score').innerText = `${percent}%`;
+            document.getElementById('res-correct-fraction').innerText = `${score} / 10 正解`;
+
+            const rank = calculateBadge(score);
+            const badgeLabel = document.getElementById('res-rank');
+            badgeLabel.innerText = rank.title;
+            document.getElementById('res-rank-desc').innerText = rank.desc;
+
+            // Class color theme setup for final screen rank badge
+            if (score >= 10) {
+                badgeLabel.className = "text-3xl font-black text-transparent bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-500 bg-clip-text";
+            } else if (score >= 7) {
+                badgeLabel.className = "text-3xl font-black text-transparent bg-gradient-to-r from-violet-400 via-indigo-400 to-blue-500 bg-clip-text";
+            } else if (score >= 3) {
+                badgeLabel.className = "text-3xl font-black text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text";
+            } else {
+                badgeLabel.className = "text-3xl font-black text-slate-300";
+            }
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            updateTelemetry();
+            updateRankBadge();
+            renderQuizQuestion();
+        }
+
+        // 7. Achievement Badges Display Engine
+        function calculateBadge(currentScore) {
+            let active = rankBadges[0];
+            rankBadges.forEach(badge => {
+                if (currentScore >= badge.threshold) {
+                    active = badge;
+                }
+            });
+            return active;
+        }
+
+        function updateTelemetry() {
+            // Write stats to global widgets
+            document.getElementById('header-score').innerHTML = `<span class="text-emerald-400 font-cyber">${score}</span> / 10`;
+            document.getElementById('stat-solved').innerText = score;
+            
+            const progress = Math.round((score / 10) * 100);
+            document.getElementById('home-progress-text').innerText = `${progress}%`;
+            document.getElementById('home-progress-bar').style.width = `${progress}%`;
+
+            let unlockedCount = 0;
+            rankBadges.forEach(b => {
+                if (score >= b.threshold) unlockedCount++;
+            });
+            document.getElementById('stat-unlocked').innerText = `${unlockedCount} / 4`;
+        }
+
+        function updateRankBadge() {
+            const currentRank = calculateBadge(score);
+            const rankLabelHeader = document.getElementById('header-rank');
+            const rankLabelHome = document.getElementById('home-rank');
+
+            rankLabelHeader.innerText = currentRank.title;
+            rankLabelHome.innerText = currentRank.title;
+
+            // Accent changes
+            if (score >= 10) {
+                rankLabelHeader.className = "text-sm font-bold text-transparent bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text font-cyber neon-text";
+                rankLabelHome.className = "text-2xl font-black text-transparent bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text font-cyber";
+            } else if (score >= 7) {
+                rankLabelHeader.className = "text-sm font-bold text-transparent bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text font-cyber neon-text";
+                rankLabelHome.className = "text-2xl font-black text-transparent bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text font-cyber";
+            } else if (score >= 3) {
+                rankLabelHeader.className = "text-sm font-bold text-transparent bg-gradient-to-r from-cyan-400 to-teal-500 bg-clip-text font-cyber neon-text";
+                rankLabelHome.className = "text-2xl font-black text-transparent bg-gradient-to-r from-cyan-400 to-teal-500 bg-clip-text font-cyber";
+            } else {
+                rankLabelHeader.className = "text-sm font-bold text-slate-400 font-cyber";
+                rankLabelHome.className = "text-2xl font-black text-slate-300";
+            }
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badges-container');
+            container.innerHTML = "";
+
+            rankBadges.forEach((badge, index) => {
+                const isUnlocked = score >= badge.threshold;
+                const activeBorderClass = isUnlocked ? 'border-emerald-500/40 bg-slate-900/60' : 'border-slate-800 bg-slate-950/40 opacity-50';
+                const glowStyle = (isUnlocked && index === 3) ? 'box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);' : '';
+                
+                let rankColorText = "text-slate-500";
+                if (isUnlocked) {
+                    if (index === 3) rankColorText = "text-amber-400";
+                    else if (index === 2) rankColorText = "text-violet-400";
+                    else if (index === 1) rankColorText = "text-cyan-400";
+                    else rankColorText = "text-emerald-400";
+                }
+
+                container.innerHTML += `
+                    <div class="border p-6 rounded-3xl backdrop-blur-sm transition-all duration-500 relative flex flex-col justify-between ${activeBorderClass}" style="${glowStyle}">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <span class="text-[10px] font-mono text-slate-500 font-bold tracking-widest block">${badge.level}</span>
+                                <h4 class="text-xl font-extrabold ${rankColorText} mt-1 font-cyber">${badge.title}</h4>
+                            </div>
+                            <span class="text-xs font-mono font-bold tracking-wider px-3 py-1 rounded-full ${isUnlocked ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-900 text-slate-600 border border-slate-800'}">
+                                ${isUnlocked ? 'UNLOCKED' : `REQ: ${badge.threshold} PTS`}
+                            </span>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                            ${badge.desc}
+                        </p>
+                        <div class="border-t border-slate-800/80 pt-4 flex items-center justify-between text-xs font-mono text-slate-500">
+                            <span>RANK THRESHOLD:</span>
+                            <span class="font-cyber font-bold ${isUnlocked ? 'text-slate-300' : 'text-slate-600'}">${badge.threshold} CORRECT ANSWERS</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
